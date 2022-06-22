@@ -1,0 +1,53 @@
+version: '2.3'
+
+services:
+  # worker:
+  #   container_name: lin-worker
+  #   image: ic-registry.epfl.ch/mlo/lin-pytorch
+  #   shm_size: 8G
+  #   volumes:
+  #     - /mloraw1/tlin/:/mlodata1/tlin
+  #   command: ["sleep", "infinity"]
+  #   runtime: nvidia
+  #   environment:
+  #     JOBMONITOR_TIMESERIES_HOST: lin-timeseries
+  #     JOBMONITOR_METADATA_HOST: lin-metadata
+  #   networks:
+  #     - net
+  # timeseries:
+  #   container_name: lin-timeseries
+  #   image: influxdb:1.7
+  #   volumes:
+  #     - /mlo-container-scratch/tlin/databases/runtime-influxdb:/var/lib/influxdb
+  #   networks:
+  #     - net
+  # metadata:
+  #   container_name: lin-metadata
+  #   image: mongo:4.0
+  #   volumes:
+  #     - /mlo-container-scratch/tlin/databases/metadata-mongodb:/data/db
+  #   networks:
+  #     - net
+  notebook:
+    container_name: lin-notebook
+    image: ic-registry.epfl.ch/mlo/lin-notebook
+    # user: root
+    shm_size: 8G
+    working_dir: /mlodata1/tlin
+    volumes:
+      - /mloraw1/tlin/:/mlodata1/tlin
+    # command: ["start-notebook.sh", "--NotebookApp.token=''"]
+    runtime: nvidia
+    # environment:
+    #   NB_UID: 144057
+    #   NB_GID: 11169
+    #   JOBMONITOR_TIMESERIES_HOST: lin-timeseries
+    #   JOBMONITOR_METADATA_HOST: lin-metadata
+      # CHOWN_HOME: 'yes'
+      # CHOWN_HOME_OPTS: -R
+    networks:
+      - net
+    ports:
+      - 18888:8888
+networks:
+  net:
