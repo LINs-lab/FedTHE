@@ -13,7 +13,7 @@ We illustrate the advancement of FedTHE+ (and its degraded computationally effic
 Along with this, we build a benchmark for assessing performance and robustness of personalized FL methods during deployment.
 
 ## Code
-Coming soon!
+Coming soon (please also check out our uncleaned code [here](https://github.com/lins-lab/fedthe/tree/draft_code))!
 
 ## References
 If you use the code, please cite the following paper:
