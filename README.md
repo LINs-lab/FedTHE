@@ -13,16 +13,16 @@ We illustrate the advancement of FedTHE+ (and its degraded computationally effic
 Along with this, we build a benchmark for assessing performance and robustness of personalized FL methods during deployment.
 
 ## Code
-Coming soon (please also check out our uncleaned code [here](https://github.com/lins-lab/fedthe/tree/draft_code))!
+Coming soon (In 1-2 weeks. Please also check out our uncleaned code [here](https://github.com/lins-lab/fedthe/tree/draft_code))!
 
 ## References
 If you use the code, please cite the following paper:
 
 ```
-@article{jiang2022test,
+@inproceedings{jiang2023test,
   title={Test-Time Robust Personalization for Federated Learning},
   author={Jiang, Liangze and Lin, Tao},
-  journal={arXiv preprint arXiv:2205.10920},
-  year={2022}
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year={2023}
 }
 ```
