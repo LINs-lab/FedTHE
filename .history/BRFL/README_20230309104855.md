@@ -19,7 +19,7 @@ The benchmark currently contains CIFAR-10 and [ImageNet32](https://patrykchrabas
 
 ### ImageNet32
 
-1. The data pipeline of ImageNet32 follows the same procedure as CIFAR-10, except that (downsampled) ImageNet[-A](https://github.com/hendrycks/natural-adv-examples) / [-R](https://github.com/hendrycks/imagenet-r) and [-V2](https://github.com/modestyachts/ImageNetV2) are considered as OOD test sets (check `run.py` for more details).
+1. The data pipeline of ImageNet32 follows the same procedure as CIFAR-10, except that ImageNet[-A](https://github.com/hendrycks/natural-adv-examples) / [-R](https://github.com/hendrycks/imagenet-r) and [-V2](https://github.com/modestyachts/ImageNetV2) are considered as OOD test sets (check `run.py` for more details).
 
 ## Visualizations
 We provide notebooks [`visualization_cifar10.ipynb`](visualization_cifar10.ipynb) and [`visualization_imagenet.ipynb`](visualization_imagenet.ipynb) to visualize and explore the local data of each client.
