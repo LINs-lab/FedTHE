@@ -13,7 +13,9 @@ Along with this, we build a benchmark for assessing the performance and robustne
 
 
 ## Code
-Coming soon (In 1-2 weeks. Please also check out our uncleaned code [here](https://github.com/lins-lab/fedthe/tree/draft_code))!
+A separate code for [BRFL: A Benchmark For Robust FL](https://github.com/LINs-lab/FedTHE/tree/master/BRFL) can be found in this repository.
+
+The complete code for FedTHE variants will be ready in 1-2 weeks (Please also check out our uncleaned code [here](https://github.com/lins-lab/fedthe/tree/draft_code))!
 
 ## References
 If you use the code, please cite the following paper:
