@@ -13,13 +13,25 @@ if __name__ == "__main__":
     # Hyperparameters.
     parser = argparse.ArgumentParser()
     parser.add_argument('--seed', type=int, default=6)
+    parser.add_argument('--data_path', type=str, default=os.getcwd())
     parser.add_argument('--num_clients', type=int, default=20)
     parser.add_argument('--data_type', type=str, default="cifar10")
     parser.add_argument('--local_tr_ratio', type=float, default=0.6)
     parser.add_argument('--local_te_ratio', type=float, default=0.2)
     parser.add_argument('--non_iid_alpha', type=float, default=0.1)
-    parser.add_argument('--corr_severity', type=int, default=5)
-    parser.add_argument('--data_path', type=str, default=os.getcwd())
+    parser.add_argument(
+        '--corr_severity',
+        help="Severity of corruption (only affect corrupted tests), between 0 and 5",
+        type=int,
+        default=5
+    )
+    parser.add_argument(
+        '--weighted_sampling_mixed_test',
+        help="Whether sampling each test distribution approx. equally (for cifar10)",
+        type=bool,
+        default=True
+    )
+
     args = parser.parse_args()
 
     random_state = np.random.RandomState(args.seed)
@@ -80,6 +92,7 @@ if __name__ == "__main__":
         fl_data_per_client["mixed_test"] = create_ood_test.get_mixed_data(
             fl_data_per_client,
             random_state,
+            weighted_sampling=args.weighted_sampling_mixed_test,
         )  # mixed test
 
         # `fl_data_per_client` thus becomes a dict where fl_data_per_client[test_type][client_id] gives the corresponding local dataset.
