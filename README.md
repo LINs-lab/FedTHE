@@ -23,6 +23,8 @@ In this work, we identify the pitfalls of existing works under test-time distrib
 ## Usage
 ### Requirements
 To distribute FL clients over GPUs and do local training efficiently, this codebase is based on PyTorch with MPI backend for a Master-Worker computation/communication topology. We rely on [`env/Dockerfile`](env/Dockerfile) to manage the environment.
+
+Please do `docker pull ljiang98/fedthe_iclr2023:latest` for an image built from the above Dockerfile, if it's not convenient for you to build the image locally.
 ### How to Run
 The main entry point of a single experiment is [`main.py`](main.py). To facilitate experiments running, we provide [`scripts`](exps/) for running the bulk experiments in the paper. For example, to run `FedTHE`/`FedTHE+` and other baselines on CIFAR10 with CNN (Tab. 1), you can run the following command:
 ```
