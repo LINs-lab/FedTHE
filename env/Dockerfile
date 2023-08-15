@@ -63,7 +63,7 @@ ENV LD_LIBRARY_PATH /.openmpi/lib:$LD_LIBRARY_PATH
 
 # install pytorch, torchvision.
 RUN git clone --recursive  https://github.com/pytorch/pytorch
-RUN conda install -y numpy
+RUN conda install -y numpy pyyaml
 RUN cd pytorch && \
     git checkout tags/v1.8.0 && \
     git submodule sync && \
@@ -71,7 +71,7 @@ RUN cd pytorch && \
     TORCH_CUDA_ARCH_LIST="3.7+PTX;5.0;6.0;6.1;7.0;7.5;8.0;8.6" TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \
     CMAKE_PREFIX_PATH="$(dirname $(which conda))/../" \
     pip install -v .
-RUN conda install av -c conda-forge
+RUN conda install -c conda-forge 'ffmpeg<5'
 RUN git clone https://github.com/pytorch/vision.git && cd vision && git checkout tags/v0.9.2-rc2 && python setup.py install
 
 # tmux
