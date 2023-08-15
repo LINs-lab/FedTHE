@@ -1,17 +1,19 @@
-FROM nvidia/cuda:11.2.1-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:11.2.2-cudnn8-devel-ubuntu18.04
 
 # Environment variables
 ARG PYTHON_VERSION=3.8
 ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=Asia/Shanghai LANG=C.UTF-8 LC_ALL=C.UTF-8 PIP_NO_CACHE_DIR=1
+
+# NOTE: If you are in China, please uncomment the following lines.
+# ENV TZ=Asia/Shanghai LANG=C.UTF-8 LC_ALL=C.UTF-8 PIP_NO_CACHE_DIR=1
+# RUN sed -i "s/archive.ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list &&\
+#     sed -i "s/security.ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list
 
 # Install apt packages
-RUN sed -i "s/archive.ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list &&\
-    sed -i "s/security.ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list &&\
-    rm -f /etc/apt/sources.list.d/* &&\
+RUN rm -f /etc/apt/sources.list.d/* &&\
     apt-get update && apt-get upgrade -y &&\
     apt-get install -y --no-install-recommends \
-        # Determined AI requirements and common tools
+        # Ccommon tools
         autoconf automake autotools-dev build-essential ca-certificates \
         make cmake ninja-build pkg-config g++ ccache yasm \
         ccache doxygen graphviz plantuml \
@@ -32,23 +34,17 @@ RUN sed -i "s/archive.ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list &&
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Conda and Determined AI stuff
-WORKDIR /tmp
+# Install Conda & Python
 ENV PATH="/opt/conda/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1 PYTHONFAULTHANDLER=1 PYTHONHASHSEED=0
-ENV JUPYTER_CONFIG_DIR=/run/determined/jupyter/config
-ENV JUPYTER_DATA_DIR=/run/determined/jupyter/data
-ENV JUPYTER_RUNTIME_DIR=/run/determined/jupyter/runtime
-RUN git clone https://github.com/LingzheZhao/determinedai-container-scripts &&\
-    cd determinedai-container-scripts &&\
-    git checkout v0.1 &&\
-    ./install_python.sh ${PYTHON_VERSION} &&\
-    cp .condarc /opt/conda/.condarc &&\
-    pip config set global.index-url https://mirrors.bfsu.edu.cn/pypi/web/simple &&\
-    pip install determined && pip uninstall -y determined &&\ 
-    ./add_det_nobody_user.sh &&\
-    ./install_libnss_determined.sh &&\
+RUN cd /tmp &&\
+    curl --retry 3 -fsSL -O "https://repo.anaconda.com/miniconda/Miniconda3-py38_23.5.2-0-Linux-x86_64.sh" &&\
+    bash "./Miniconda3-py38_23.5.2-0-Linux-x86_64.sh" -b -p "/opt/conda" &&\
     rm -rf /tmp/*
+
+RUN conda install python=${PYTHON_VERSION} &&\
+    conda update --prefix "/opt/conda" --all -y &&\
+    conda clean --all -f -y
 
 # install openMPI
 RUN mkdir /.openmpi/
@@ -63,7 +59,8 @@ ENV LD_LIBRARY_PATH /.openmpi/lib:$LD_LIBRARY_PATH
 
 # install pytorch, torchvision.
 RUN git clone --recursive  https://github.com/pytorch/pytorch
-RUN conda install -y numpy pyyaml
+RUN conda install -y numpy pyyaml &&\
+    pip install typing-extensions
 RUN cd pytorch && \
     git checkout tags/v1.8.0 && \
     git submodule sync && \
@@ -75,19 +72,33 @@ RUN conda install -c conda-forge 'ffmpeg<5'
 RUN git clone https://github.com/pytorch/vision.git && cd vision && git checkout tags/v0.9.2-rc2 && python setup.py install
 
 # tmux
-RUN sed -i "s/archive.ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list &&\
-    sed -i "s/security.ubuntu.com/mirrors.ustc.edu.cn/g" /etc/apt/sources.list &&\
-    rm -f /etc/apt/sources.list.d/* &&\
+RUN rm -f /etc/apt/sources.list.d/* &&\
     apt-get update &&\
     apt-get -y install tzdata tmux &&\
     apt-get clean
 
+# configure user
+RUN groupadd --gid 65533 default_user
+RUN useradd --shell /bin/bash \
+    --create-home --home-dir /tmp/default_user \
+    --uid 65533 --gid 65533 \
+    default_user
+RUN echo "default_user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN chown -R default_user:default_user /opt &&\
+    chmod 755 /opt &&\
+    chown -R default_user:default_user /var &&\
+    chmod 755 /var
+
 # extra requirements
 RUN conda install scikit-learn pandas seaborn
 RUN pip install --upgrade scikit-image &&\
-    pip install wand einops opencv-python pyarrow
-RUN apt -y install imagemagick
+    pip install wand einops opencv-python pyarrow lmdb
 
+RUN apt -y install imagemagick
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN apt update
 RUN apt -y install gcc-9 libstdc++6
+
+USER default_user
+WORKDIR /home/default_user
